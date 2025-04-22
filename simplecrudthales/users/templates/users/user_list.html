@@ -1,0 +1,43 @@
+<h1>Users</h1>
+<a href="{% url 'user_create' %}">Add New User</a>
+<table style="border: 1px solid black; border-collapse: collapse; width: 100%; margin-top: 10px;">
+  <thead>
+    <tr>
+      <th style="border: 1px solid black; padding: 8px;">No.</th> <!-- Added numbering header -->
+      <th style="border: 1px solid black; padding: 8px;">Full Name</th>
+      <th style="border: 1px solid black; padding: 8px;">Email</th>
+      <th style="border: 1px solid black; padding: 8px;">Phone</th>
+      <th style="border: 1px solid black; padding: 8px;">Gender</th>
+      <th style="border: 1px solid black; padding: 8px;">KTP</th>
+      <th style="border: 1px solid black; padding: 8px;">Address</th>
+      <th style="border: 1px solid black; padding: 8px;">City</th>
+      <th style="border: 1px solid black; padding: 8px;">Province</th>
+      <th style="border: 1px solid black; padding: 8px;">Birth place</th>
+      <th style="border: 1px solid black; padding: 8px;">Birth date</th>
+      <th style="border: 1px solid black; padding: 8px;">Nationality</th>
+      <th style="border: 1px solid black; padding: 8px;">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for user in users %}
+      <tr>
+        <td style="border: 1px solid black; padding: 8px;">{{ forloop.counter }}</td> <!-- Auto numbering -->
+        <td style="border: 1px solid black; padding: 8px;">{{ user.full_name }}</td>
+        <td style="border: 1px solid black; padding: 8px;">{{ user.email }}</td>
+        <td style="border: 1px solid black; padding: 8px;">{{ user.phone }}</td>
+        <td style="border: 1px solid black; padding: 8px;">{{ user.gender }}</td>
+        <td style="border: 1px solid black; padding: 8px;">{{ user.ktp }}</td>
+        <td style="border: 1px solid black; padding: 8px;">{{ user.address }}</td>
+        <td style="border: 1px solid black; padding: 8px;">{{ user.city }}</td>
+        <td style="border: 1px solid black; padding: 8px;">{{ user.province }}</td>
+        <td style="border: 1px solid black; padding: 8px;">{{ user.birth_place }}</td>
+        <td style="border: 1px solid black; padding: 8px;">{{ user.birth_day }}</td>
+        <td style="border: 1px solid black; padding: 8px;">{{ user.nationality }}</td>
+        <td style="border: 1px solid black; padding: 8px;">
+          <a href="{% url 'user_update' user.id %}">Edit</a> |
+          <a href="{% url 'user_delete' user.id %}">Delete</a>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
