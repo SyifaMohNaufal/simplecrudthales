@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db import connection
 from utils.thales import thales_decrypt, thales_encrypt, thales_decrypt_masking
 from .forms import UserForm
-import uuid
+import uuid, re
+from django.core.paginator import Paginator
 
 def user_list(request):
     with connection.cursor() as cursor:
@@ -10,6 +11,7 @@ def user_list(request):
             SELECT id, full_name, email, phone, gender, ktp, address, city, province, birth_day, birth_place, nationality 
             FROM users_user
             WHERE deleted_date IS NULL
+            ORDER BY create_date desc
         """)
         columns = [col[0] for col in cursor.description]
         rows = [
@@ -17,15 +19,17 @@ def user_list(request):
             for row in cursor.fetchall()
         ]
 
-    # Decrypt KTP after fetching from DB
-    for row in rows:
-        if row['ktp']:
+    paginator = Paginator(rows, 10)  # Show 10 users per page
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    for row in page_obj:
+        if row['ktp'] and bool(re.fullmatch(r'\d{16}', row['ktp'])) != True:
             try:
-                row['ktp'] = thales_decrypt_masking(row['ktp'])
+                row['ktp'] = thales_decrypt(row['ktp'])
             except Exception as e:
                 row['ktp'] = f"DECRYPT_ERR: {e}"  # Optional: fallback or logging
 
-    return render(request, 'users/user_list.html', {'users': rows})
+    return render(request, 'users/user_list.html', {'page_obj': page_obj})
 
 
 def user_create(request):
@@ -33,6 +37,7 @@ def user_create(request):
     if form.is_valid():
         data = form.cleaned_data
         encrypted_ktp = thales_encrypt(data['ktp'])
+        encrypted_nama = thales_encrypt(data['full_name'])
         
         with connection.cursor() as cursor:
             cursor.execute("""
@@ -46,7 +51,7 @@ def user_create(request):
                     GETDATE()
                 )
             """, [
-                str(uuid.uuid4()).lower(), data['full_name'], data['email'], data['phone'], data['gender'],
+                str(uuid.uuid4()).lower(), encrypted_nama, data['email'], data['phone'], data['gender'],
                 encrypted_ktp, data['address'], data['city'], data['province'],
                 data['birth_day'], data['birth_place'], data['nationality']
             ])

@@ -3,41 +3,58 @@
 <table style="border: 1px solid black; border-collapse: collapse; width: 100%; margin-top: 10px;">
   <thead>
     <tr>
-      <th style="border: 1px solid black; padding: 8px;">No.</th> <!-- Added numbering header -->
-      <th style="border: 1px solid black; padding: 8px;">Full Name</th>
-      <th style="border: 1px solid black; padding: 8px;">Email</th>
-      <th style="border: 1px solid black; padding: 8px;">Phone</th>
-      <th style="border: 1px solid black; padding: 8px;">Gender</th>
-      <th style="border: 1px solid black; padding: 8px;">KTP</th>
-      <th style="border: 1px solid black; padding: 8px;">Address</th>
-      <th style="border: 1px solid black; padding: 8px;">City</th>
-      <th style="border: 1px solid black; padding: 8px;">Province</th>
-      <th style="border: 1px solid black; padding: 8px;">Birth place</th>
-      <th style="border: 1px solid black; padding: 8px;">Birth date</th>
-      <th style="border: 1px solid black; padding: 8px;">Nationality</th>
-      <th style="border: 1px solid black; padding: 8px;">Actions</th>
+      <th>No.</th>
+      <th>Full Name</th>
+      <th>Email</th>
+      <th>Phone</th>
+      <th>Gender</th>
+      <th>KTP</th>
+      <th>Address</th>
+      <th>City</th>
+      <th>Province</th>
+      <th>Birth place</th>
+      <th>Birth date</th>
+      <th>Nationality</th>
+      <th>Actions</th>
     </tr>
   </thead>
   <tbody>
-    {% for user in users %}
+    {% for user in page_obj %}
       <tr>
-        <td style="border: 1px solid black; padding: 8px;">{{ forloop.counter }}</td> <!-- Auto numbering -->
-        <td style="border: 1px solid black; padding: 8px;">{{ user.full_name }}</td>
-        <td style="border: 1px solid black; padding: 8px;">{{ user.email }}</td>
-        <td style="border: 1px solid black; padding: 8px;">{{ user.phone }}</td>
-        <td style="border: 1px solid black; padding: 8px;">{{ user.gender }}</td>
-        <td style="border: 1px solid black; padding: 8px;">{{ user.ktp }}</td>
-        <td style="border: 1px solid black; padding: 8px;">{{ user.address }}</td>
-        <td style="border: 1px solid black; padding: 8px;">{{ user.city }}</td>
-        <td style="border: 1px solid black; padding: 8px;">{{ user.province }}</td>
-        <td style="border: 1px solid black; padding: 8px;">{{ user.birth_place }}</td>
-        <td style="border: 1px solid black; padding: 8px;">{{ user.birth_day }}</td>
-        <td style="border: 1px solid black; padding: 8px;">{{ user.nationality }}</td>
-        <td style="border: 1px solid black; padding: 8px;">
+        <td>{{ forloop.counter0|add:page_obj.start_index }}</td>
+        <td>{{ user.full_name }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.phone }}</td>
+        <td>{{ user.gender }}</td>
+        <td>{{ user.ktp }}</td>
+        <td>{{ user.address }}</td>
+        <td>{{ user.city }}</td>
+        <td>{{ user.province }}</td>
+        <td>{{ user.birth_place }}</td>
+        <td>{{ user.birth_day }}</td>
+        <td>{{ user.nationality }}</td>
+        <td>
           <a href="{% url 'user_update' user.id %}">Edit</a> |
           <a href="{% url 'user_delete' user.id %}">Delete</a>
         </td>
       </tr>
+    {% empty %}
+      <tr><td colspan="13">No users found.</td></tr>
     {% endfor %}
   </tbody>
 </table>
+
+<!-- Pagination Controls -->
+<div style="margin-top: 10px;">
+  {% if page_obj.has_previous %}
+    <a href="?page=1">&laquo; first</a>
+    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+  {% endif %}
+
+  Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+
+  {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}">next</a>
+    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+  {% endif %}
+</div>

@@ -36,5 +36,5 @@ class User(models.Model):
 
     objects=EncryptedFieldManager()
 
-    def __str__(self):
-        return self.full_name
+    # def __str__(self):
+    #     return self.full_name
